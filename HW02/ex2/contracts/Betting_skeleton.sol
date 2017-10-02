@@ -25,11 +25,13 @@ contract BettingContract {
 	event BetClosed();
 
 	/* Uh Oh, what are these? */
-	modifier OwnerOnly() {}
-	modifier OracleOnly() {}
+	modifier OwnerOnly(address ownerOnly) {if (msg.sender == ownerOnly) {_;}}
+	modifier OracleOnly(address oracleOnly) {if (msg.sender == oracleOnly) {_;}}
 
 	/* Constructor function, where owner and outcomes are set */
 	function BettingContract(uint[] _outcomes) {
+	    outcomes = _outcomes;
+			owner = msg.sender;
 	}
 
 	/* Owner chooses their trusted Oracle */
@@ -47,11 +49,11 @@ contract BettingContract {
 	/* Allow anyone to withdraw their winnings safely (if they have enough) */
 	function withdraw(uint withdrawAmount) returns (uint remainingBal) {
 	}
-	
+
 	/* Allow anyone to check the outcomes they can bet on */
 	function checkOutcomes() constant returns (uint[]) {
 	}
-	
+
 	/* Allow anyone to check if they won any bets */
 	function checkWinnings() constant returns(uint) {
 	}
@@ -64,4 +66,6 @@ contract BettingContract {
 	function() {
 		revert();
 	}
+
+
 }
