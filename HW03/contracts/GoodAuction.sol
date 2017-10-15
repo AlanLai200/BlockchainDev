@@ -6,7 +6,6 @@ import "./AuctionInterface.sol";
 contract GoodAuction is AuctionInterface {
 	/* New data structure, keeps track of refunds owed to ex-highest bidders */
 	mapping(address => uint) refunds;
-
 	/* Bid function, shifts to push paradigm
 	 * Must return true on successful send and/or bid, bidder
 	 * reassignment
@@ -15,11 +14,27 @@ contract GoodAuction is AuctionInterface {
 	 */
 	function bid() payable external returns(bool) {
 		// YOUR CODE HERE
+		if (msg.value < highestBid) {
+			return false;
+		}
+		if (highestBid != 0) {
+			refunds[highestBidder] += highestBid;
+			return true;
+		}
+
+		highestBidder = msg.sender;
+		highestBid = msg.value;
 	}
 
 	/* New withdraw function, shifts to push paradigm */
 	function withdrawRefund() external returns(bool) {
+		uint refund = refunds[msg.sender];
+		refunds[msg.sender] = 0;
+		if (!msg.sender.send(refund)) {
+				refunds[msg.sender] = refund;
+			}
 		// YOUR CODE HERE
+
 	}
 
 	/* Allow users to check the amount they can withdraw */
@@ -30,5 +45,5 @@ contract GoodAuction is AuctionInterface {
 	/* Give people their funds back */
 	function () payable {
 		// YOUR CODE HERE
-	}
+		}
 }
